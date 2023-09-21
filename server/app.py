@@ -29,9 +29,10 @@ def messages():
         return response
     
     elif request.method == 'POST':
+        data = request.get_json()
         new_message = Message(
-            body = request.form.get('body'),
-            username = request.form.get('username'),
+            body = data.get('body'),
+            username = data.get('username'),
         )
         
         db.session.add(new_message)
@@ -47,8 +48,9 @@ def messages_by_id(id):
     message = Message.query.filter(Message.id == id).first()
     
     if request.method == 'PATCH':
-        for attr in request.form:
-            setattr(message, attr, request.form.get(attr))
+        data = request.get_json()
+        for attr in data:
+            setattr(message, attr, data.get(attr))
         
         db.session.add(message)
         db.session.commit()
@@ -66,7 +68,7 @@ def messages_by_id(id):
             "message": "Message deleted." 
         }
         
-        response = make_response(jsonify(response_body), 200)
+        response = make_response(response_body, 200)
         return response
 
 if __name__ == '__main__':
